@@ -1,17 +1,23 @@
 #!/usr/bin/python
 
+import sys
 import irclib
 import dirty_secrets
 
 # Connection information
 network = 'irc.freenode.net'
 port = 6667
-#channel = '#irclib'
-channel = '#cplug'
-nick = 'MPU'
 password = dirty_secrets.password
 name = '!wthru'
 owner = 'xiong_chiamiov'
+
+# change some settings based on whether we're running the testing version or not
+if(sys.argv[0].find('testing')!=-1):
+	channel = '#mputesting'
+	nick = 'MPU-testing'
+else:
+	channel = '#cplug'
+	nick = 'MPU'
 
 # Create an IRC object
 irc = irclib.IRC()
