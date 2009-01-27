@@ -6,6 +6,7 @@ licensed under the WTF license
 '''
 
 import sys
+from time import strftime
 import irclib
 import dirty_secrets
 
@@ -26,6 +27,8 @@ else:
 	channel = '#cplug'
 	nick = 'MPU'
 
+gagged = False
+
 # Create an IRC object
 irc = irclib.IRC()
 
@@ -37,7 +40,8 @@ server.join(channel)
 ## Methods
 # a shortened way to send messages to the channel
 def say(message):
-	server.privmsg(channel, message)
+	if(not gagged):
+		server.privmsg(channel, message)
 
 def help(command=None):
 	if(command=='MPU-help'):
@@ -55,6 +59,15 @@ def help(command=None):
 		return True
 	if(command=='MPU-report'):
 		say("Will send whatever follows to "+owner+" in a PM, or log it if he's offline.")
+		return True
+	if(command=='MPU-kill'):
+		say("Disconnects MPU from "+network+".")
+		return True
+	if(command=='MPU-gag'):
+		say("Prevents MPU from speaking until ungagged.")
+		return True
+	if(command=='MPU-ungag'):
+		say("Allows MPU to speak again after being gagged.")
 		return True
 	if(command=='info'):
 		return True
@@ -95,7 +108,23 @@ def report(userFrom, message):
 	# temporary while I determine what magic to use above
 	server.privmsg(owner, userFrom+" has something to say: "+message)
 	logFile = open('MPU.log', 'a')
-	return logFile.write(userFrom+" had something to say: "+message+"\n") and logFile.close()
+	return logFile.write(strftime("%Y-%m-%d %H:%M:%S")+" -- "+userFrom+" had something to say: "+message+"\n") and logFile.close()
+
+def kill():
+	server.privmsg(owner, "I've been killed!")
+	logFile = open('MPU.log', 'a')
+	logFile.write(strftime("%Y-%m-%d %H:%M:%S")+" -- "+"Got killed!\n")
+	server.disconnect()
+
+def gag():
+	global gagged
+	gagged = True
+	return True
+
+def ungag():
+	global gagged
+	gagged = False
+	return True
 
 
 ## Handle Input
@@ -105,6 +134,9 @@ handleFlags = {
 	'motivation':   lambda userFrom, command: motivation(),
 	'MPU-source':   lambda userFrom, command: source(),
 	'MPU-report':   lambda userFrom, command: report(userFrom, command),
+	'MPU-kill':     lambda userFrom, command: kill(),
+	'MPU-gag':      lambda userFrom, command: gag(),
+	'MPU-ungag':    lambda userFrom, command: ungag(),
 	#'info':         lambda(userFrom, command): info(userFrom=userFrom, command=command),
 }
 
