@@ -153,7 +153,7 @@ def handlePublicMessage(connection, event):
 		try:
 			return handleFlags[flag[1:]](userFrom, ' '.join(command))
 		except:
-			return handleFlags['MPU-help'](userFrom, '')
+			return True
 
 
 ## Final Setup
