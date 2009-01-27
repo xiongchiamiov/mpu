@@ -1,4 +1,6 @@
 dirty_secrets*
 test*
+temp*
 *.pyc
 *.py.swp
+*.log
