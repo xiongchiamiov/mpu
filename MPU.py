@@ -117,6 +117,7 @@ def kill():
 	logFile = open('MPU.log', 'a')
 	logFile.write(strftime("%Y-%m-%d %H:%M:%S")+" -- "+"Got killed!\n")
 	server.disconnect()
+	sys.exit()
 
 def gag():
 	global gagged
@@ -163,7 +164,7 @@ def handlePrivateMessage(connection, event):
 	try:
 		handleFlags[flag](userFrom, ' '.join(command))
 		channel = temp
-	except:
+	except KeyError:
 		handleFlags['MPU-help'](userFrom, '')
 		channel = temp
 	return True
@@ -186,7 +187,7 @@ def handlePublicMessage(connection, event):
 	else:
 		try:
 			return handleFlags[flag[1:]](userFrom, ' '.join(command))
-		except:
+		except KeyError:
 			return True
 
 
