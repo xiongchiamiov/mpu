@@ -6,7 +6,7 @@ licensed under the WTF license
 '''
 
 import sys
-from time import strftime
+from time import strftime, sleep
 import irclib
 import dirty_secrets
 
@@ -23,6 +23,7 @@ owner = 'xiong_chiamiov'
 if(sys.argv[0].find('testing')!=-1):
 	channel = '#mputesting'
 	nick = 'MPU-testing'
+	irclib.DEBUG = True
 else:
 	channel = '#cplug'
 	nick = 'MPU'
@@ -42,6 +43,7 @@ server.join(channel)
 def say(message):
 	if(not gagged):
 		server.privmsg(channel, message)
+		sleep(1)
 
 def help(command=None):
 	if(command=='MPU-help'):
