@@ -196,4 +196,4 @@ irc.add_global_handler('privmsg', handlePrivateMessage)
 irc.add_global_handler('pubmsg', handlePublicMessage)
 
 # Jump into an infinite loop
-irc.process_forever()
+irc.process_forever(timeout=1.0)
