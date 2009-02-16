@@ -19,24 +19,10 @@ password = dirty_secrets.password
 name = 'try !wthru or !MPU-help'
 owner = 'xiong_chiamiov'
 
-# change some settings based on whether we're running the testing version or not
-if(sys.argv[0].find('testing')!=-1):
-	channel = '#mputesting'
-	nick = 'MPU-testing'
-	irclib.DEBUG = True
-else:
-	channel = '#cplug'
-	nick = 'MPU'
-
 gagged = False
 
 # Create an IRC object
 irc = irclib.IRC()
-
-# Create a server object, connect and join the channel
-server = irc.server()
-server.connect(network, port, nick, password=password, ircname=name)
-server.join(channel)
 
 ## Methods
 # a shortened way to send messages to the channel
@@ -78,7 +64,7 @@ def help(command=None):
 		return True
 
 def wthru():
-	say("MPU is owned by "+owner)
+	say("MPU is owned by "+owner+" and responds to PMs just as well as channel flags (save the spam!)")
 	say("ED: Who are you? Eh? What? What did you just say?")
 	say("SATELLITE: Who, you? Here, always.")
 	say("ED: Edward. A net diver from Earth.")
@@ -197,4 +183,22 @@ irc.add_global_handler('privmsg', handlePrivateMessage)
 irc.add_global_handler('pubmsg', handlePublicMessage)
 
 # Jump into an infinite loop
-irc.process_forever(timeout=1.0)
+while(True):
+	try:
+		# change some settings based on whether we're running the testing version or not
+		if(sys.argv[0].find('testing')!=-1):
+			channel = '#mputesting'
+			nick = 'MPU-testing'
+			irclib.DEBUG = True
+		else:
+			channel = '#cplug'
+			nick = 'MPU'
+
+		# Create a server object, connect and join the channel
+		server = irc.server()
+		server.connect(network, port, nick, password=password, ircname=name)
+		server.join(channel)
+
+		irc.process_forever(timeout=1.0)
+	except irclib.ServerNotConnectedError:
+		sleep(5)
