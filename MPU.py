@@ -16,7 +16,7 @@ import dirty_secrets
 network = 'irc.freenode.net'
 port = 6667
 password = dirty_secrets.password
-name = 'try !wthru or !MPU-help'
+name = '/msg MPU MPU-help'
 owner = 'xiong_chiamiov'
 
 gagged = False
@@ -33,8 +33,7 @@ def say(message):
 
 def help(command=None):
 	if(command=='MPU-help'):
-		say("Type 'MPU-help [command]' to get more info about command.")
-		say("If called by itself, MPU-help will list all available commands.")
+		say("If called by itself, MPU-help will list all available commands. Followed by another command, MPU-help will give more information on that command.")
 		return True
 	if(command=='wthru'):
 		say('Returns a response to the question, "Who the hell are you?".')
@@ -61,6 +60,8 @@ def help(command=None):
 		return True
 	else:
 		say("Available commands: " + (' '.join(sorted(handleFlags.keys()))))
+		say("Type 'MPU-help [command]' to get more info about command.")
+		say("I also respond to PMs; just remember you don't need ! in front of the command.")
 		return True
 
 def wthru():
