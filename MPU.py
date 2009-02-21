@@ -199,6 +199,6 @@ while(True):
 		server.connect(network, port, nick, password=password, ircname=name)
 		server.join(channel)
 
-		irc.process_forever(timeout=1.0)
+		irc.process_forever(timeout=10.0)
 	except irclib.ServerNotConnectedError:
 		sleep(5)
