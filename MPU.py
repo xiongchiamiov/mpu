@@ -33,7 +33,7 @@ def say(message):
 		sleep(1)
 
 def help(command=None):
-	if(command=='MPU-help'):
+	if(command=='mpu-help'):
 		say("If called by itself, MPU-help will list all available commands. Followed by another command, MPU-help will give more information on that command.")
 		return True
 	if(command=='wthru'):
@@ -42,19 +42,19 @@ def help(command=None):
 	if(command=='motivation'):
 		say("Gives a motivating quote from Kamina (Gurren Lagann).")
 		return True
-	if(command=='MPU-source'):
+	if(command=='mpu-source'):
 		say("Gives the address of the Git repository of MPU's code.")
 		return True
-	if(command=='MPU-report'):
+	if(command=='mpu-report'):
 		say("Will send whatever follows to "+owner+" in a PM, or log it if he's offline.")
 		return True
-	if(command=='MPU-kill'):
+	if(command=='mpu-kill'):
 		say("Disconnects MPU from "+network+".")
 		return True
-	if(command=='MPU-gag'):
+	if(command=='mpu-gag'):
 		say("Prevents MPU from speaking until ungagged.")
 		return True
-	if(command=='MPU-ungag'):
+	if(command=='mpu-ungag'):
 		say("Allows MPU to speak again after being gagged.")
 		return True
 	if(command=='info'):
@@ -169,14 +169,14 @@ def infoset(userFrom, command):
 
 ## Handle Input
 handleFlags = {
-	'MPU-help':     lambda userFrom, command: help(command),
+	'mpu-help':     lambda userFrom, command: help(command),
 	'wthru':        lambda userFrom, command: wthru(),
 	'motivation':   lambda userFrom, command: motivation(),
-	'MPU-source':   lambda userFrom, command: source(),
-	'MPU-report':   lambda userFrom, command: report(userFrom, command),
-	'MPU-kill':     lambda userFrom, command: kill(),
-	'MPU-gag':      lambda userFrom, command: gag(),
-	'MPU-ungag':    lambda userFrom, command: ungag(),
+	'mpu-source':   lambda userFrom, command: source(),
+	'mpu-report':   lambda userFrom, command: report(userFrom, command),
+	'mpu-kill':     lambda userFrom, command: kill(),
+	'mpu-gag':      lambda userFrom, command: gag(),
+	'mpu-ungag':    lambda userFrom, command: ungag(),
 	'info':         lambda userFrom, command: info(command),
 	'infoset':	lambda userFrom, command: infoset(userFrom, command),
 }
@@ -200,10 +200,10 @@ def handlePrivateMessage(connection, event):
 	channel = userFrom
 	
 	try:
-		handleFlags[flag](userFrom, ' '.join(command))
+		handleFlags[flag.lower()](userFrom, ' '.join(command))
 		channel = temp
 	except KeyError:
-		handleFlags['MPU-help'](userFrom, '')
+		handleFlags['mpu-help'](userFrom, '')
 		channel = temp
 	return True
 
@@ -224,7 +224,7 @@ def handlePublicMessage(connection, event):
 		return False
 	else:
 		try:
-			return handleFlags[flag[1:]](userFrom, ' '.join(command))
+			return handleFlags[flag[1:].lower()](userFrom, ' '.join(command))
 		except KeyError:
 			return True
 
