@@ -7,6 +7,7 @@ licensed under the WTF license
 
 import sys
 from time import strftime, sleep
+import cPickle as pickle
 import irclib
 import dirty_secrets
 
@@ -57,6 +58,12 @@ def help(command=None):
 		say("Allows MPU to speak again after being gagged.")
 		return True
 	if(command=='info'):
+		say("Gets information on a user.")
+		say("Usage: 'info [username]' to list infos, 'info [username] [info1, info2...]' to get infos.")
+		return True
+	if(command=='infoset'):
+		say("Sets information about you.")
+		say("Usage: infoset [info] [details]")
 		return True
 	else:
 		say("Available commands: " + (' '.join(sorted(handleFlags.keys()))))
@@ -116,6 +123,49 @@ def ungag():
 	gagged = False
 	return True
 
+def info(command):
+	global userData
+	split = command.split()
+	user = split[0]
+
+	if (len(split)<2):
+		output = "I have the following information on "+user+": "
+		try:
+			for info in sorted(userData[user].keys()):
+				output += info
+		except:
+			pass
+		say(output)
+	else:
+		say("Here's your requested info on "+user+": ")
+		infos = split[1:]
+		for info in infos:
+			try:
+				output = info+": "+userData[user][info]
+			except KeyError:
+				output = "No info about "+info+" for "+user
+			say(output)
+	return True
+
+def infoset(userFrom, command):
+	global userData
+	global userDataFile
+	split = command.split()
+	info = split[0]
+	try:
+		data = ' '.join(split[1:])
+	except:
+		data = ''
+	
+	try:
+		userData[userFrom][info] = data
+	except:
+		userData[userFrom] = {}
+		userData[userFrom][info] = data
+	pickle.dump(userData, userDataFile)
+	userDataFile.flush()
+	say("Field "+info+" updated.")
+
 
 ## Handle Input
 handleFlags = {
@@ -127,7 +177,8 @@ handleFlags = {
 	'MPU-kill':     lambda userFrom, command: kill(),
 	'MPU-gag':      lambda userFrom, command: gag(),
 	'MPU-ungag':    lambda userFrom, command: ungag(),
-	#'info':         lambda(userFrom, command): info(userFrom=userFrom, command=command),
+	'info':         lambda userFrom, command: info(command),
+	'infoset':	lambda userFrom, command: infoset(userFrom, command),
 }
 
 # Treat PMs like public flags, except output is sent back in a PM to the user
@@ -188,13 +239,21 @@ while(True):
 	try:
 		# change some settings based on whether we're running the testing version or not
 		if(sys.argv[0].find('testing')!=-1):
+			userDataFile = open('userData_testing.pickle', 'a+')
 			channel = '#mputesting'
 			nick = 'MPU-testing'
 			irclib.DEBUG = True
 		else:
+			userDataFile = open('userData.pickle', 'a+')
 			channel = '#cplug'
 			nick = 'MPU'
 
+		# load the pickled file
+		try:
+			userData = pickle.load(userDataFile)
+		except:
+			userData = {}
+		
 		# Create a server object, connect and join the channel
 		server = irc.server()
 		server.connect(network, port, nick, password=password, ircname=name)
