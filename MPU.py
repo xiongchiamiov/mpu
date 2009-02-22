@@ -126,6 +126,11 @@ def ungag():
 def info(command):
 	global userData
 	split = command.split()
+
+	if (len(split)==0):
+		handleFlags['mpu-help'](None, 'info')
+		return True
+
 	user = split[0]
 
 	if (len(split)<2):
