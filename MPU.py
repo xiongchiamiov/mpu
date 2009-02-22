@@ -137,19 +137,25 @@ def info(command):
 		output = "I have the following information on "+user+": "
 		try:
 			for info in sorted(userData[user].keys()):
-				output += info
+				output += info+", "
+			# trim off the extra comma at the end
+			output = output[0:-2]
 		except:
 			pass
 		say(output)
 	else:
-		say("Here's your requested info on "+user+": ")
+		output = "Here's your requested info on "+user+": "
 		infos = split[1:]
 		for info in infos:
 			try:
-				output = info+": "+userData[user][info]
+				output += info+": "+userData[user][info]+", "
 			except KeyError:
-				output = "No info about "+info+" for "+user
-			say(output)
+				output += info+"No info, "
+
+		# trim off the extra comma at the end
+		output = output[0:-2]
+
+		say(output)
 	return True
 
 def infoset(userFrom, command):
