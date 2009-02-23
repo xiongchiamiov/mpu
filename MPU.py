@@ -150,7 +150,7 @@ def info(command):
 			try:
 				output += info+": "+userData[user][info]+", "
 			except KeyError:
-				output += info+"No info, "
+				output += info+": No info, "
 
 		# trim off the extra comma at the end
 		output = output[0:-2]
