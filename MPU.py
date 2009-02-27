@@ -110,10 +110,6 @@ def kill():
 	server.privmsg(owner, "I've been killed!")
 	logFile = open('MPU.log', 'a')
 	logFile.write(strftime("%Y-%m-%d %H:%M:%S")+" -- "+"Got killed!\n")
-
-	pickle.dump(userData, userDataFile)
-	userDataFile.close()
-
 	server.disconnect()
 	sys.exit()
 
@@ -164,6 +160,7 @@ def info(command):
 
 def infoset(userFrom, command):
 	global userData
+	global userDataFile
 	split = command.split()
 	info = split[0]
 	try:
@@ -176,6 +173,12 @@ def infoset(userFrom, command):
 	except:
 		userData[userFrom] = {}
 		userData[userFrom][info] = data
+	
+	# pickle userData
+	pickleFile = open(userDataFile, 'w')
+	pickle.dump(userData, pickleFile)
+	pickleFile.close()
+
 	say("Field "+info+" updated.")
 
 
@@ -251,18 +254,19 @@ while(True):
 	try:
 		# change some settings based on whether we're running the testing version or not
 		if(sys.argv[0].find('testing')!=-1):
-			userDataFile = open('userData_testing.pickle', 'a+')
+			userDataFile = 'userData_testing.pickle'
 			channel = '#mputesting'
 			nick = 'MPU-testing'
 			irclib.DEBUG = True
 		else:
-			userDataFile = open('userData.pickle', 'a+')
+			userDataFile = 'userData.pickle'
 			channel = '#cplug'
 			nick = 'MPU'
 
 		# load the pickled file
 		try:
-			userData = pickle.load(userDataFile)
+			pickleFile = open(userDataFile, 'r')
+			userData = pickle.load(pickleFile)
 		except:
 			userData = {}
 		

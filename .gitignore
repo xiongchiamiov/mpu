@@ -2,6 +2,6 @@ dirty_secrets*
 test*
 temp*
 *.pyc
-*.py.swp
+*.py.sw*
 *.log
 *.pickle
