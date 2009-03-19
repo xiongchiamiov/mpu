@@ -113,6 +113,8 @@ def kill(userFrom):
 		logFile.write(strftime("%Y-%m-%d %H:%M:%S")+" -- "+"Got killed!\n")
 		server.disconnect()
 		sys.exit()
+	else:
+		say("You can kill a man, but you can't kill an idea manifested in Python.")
 
 def gag():
 	global gagged
