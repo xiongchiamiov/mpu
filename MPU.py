@@ -106,12 +106,13 @@ def report(userFrom, message):
 	logFile = open('MPU.log', 'a')
 	return logFile.write(strftime("%Y-%m-%d %H:%M:%S")+" -- "+userFrom+" had something to say: "+message+"\n") and logFile.close()
 
-def kill():
-	server.privmsg(owner, "I've been killed!")
-	logFile = open('MPU.log', 'a')
-	logFile.write(strftime("%Y-%m-%d %H:%M:%S")+" -- "+"Got killed!\n")
-	server.disconnect()
-	sys.exit()
+def kill(userFrom):
+	if userFrom == owner:
+		server.privmsg(owner, "I've been killed!")
+		logFile = open('MPU.log', 'a')
+		logFile.write(strftime("%Y-%m-%d %H:%M:%S")+" -- "+"Got killed!\n")
+		server.disconnect()
+		sys.exit()
 
 def gag():
 	global gagged
@@ -189,7 +190,7 @@ handleFlags = {
 	'motivation':   lambda userFrom, command: motivation(),
 	'mpu-source':   lambda userFrom, command: source(),
 	'mpu-report':   lambda userFrom, command: report(userFrom, command),
-	'mpu-kill':     lambda userFrom, command: kill(),
+	'mpu-kill':     lambda userFrom, command: kill(userFrom),
 	'mpu-gag':      lambda userFrom, command: gag(),
 	'mpu-ungag':    lambda userFrom, command: ungag(),
 	'info':         lambda userFrom, command: info(command),
