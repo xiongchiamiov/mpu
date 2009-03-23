@@ -195,7 +195,7 @@ def changelog(command):
 		output = commands.getstatusoutput('git --no-pager log --pretty=format:%%s --since=%s' % command)
 	else:
 		output = commands.getstatusoutput('git --no-pager log --pretty=format:%s -1')
-	if output[0] or not re.match('^[\w\d "]+$', command):
+	if output[0] or (command and not re.match('^[\w\d "]+$', command)):
 		help('mpu-changelog')
 		return False
 	else:
