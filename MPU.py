@@ -8,6 +8,8 @@ licensed under the WTF license
 import sys
 from time import strftime, sleep
 import cPickle as pickle
+import commands
+import re
 import irclib
 import dirty_secrets
 
@@ -64,6 +66,10 @@ def help(command=None):
 	if(command=='infoset'):
 		say("Sets information about you.")
 		say("Usage: infoset [info] [details]")
+		return True
+	if(command=='mpu-changelog'):
+		say("Tells what's been changed recently.  If given an argument, get all changes since then.")
+		say('Example: mpu-changelog 2weeks, mpu-changelog "12 march"')
 		return True
 	else:
 		say("Available commands: " + (' '.join(sorted(handleFlags.keys()))))
@@ -184,6 +190,19 @@ def infoset(userFrom, command):
 
 	say("Field "+info+" updated.")
 
+def changelog(command):
+	if command and re.match('^[\w\d "]+$', command):
+		output = commands.getstatusoutput('git --no-pager log --pretty=format:%%s --since=%s' % command)
+	else:
+		output = commands.getstatusoutput('git --no-pager log --pretty=format:%s -1')
+	if output[0] or not re.match('^[\w\d "]+$', command):
+		help('mpu-changelog')
+		return False
+	else:
+		for summary in output[1].split('\n'):
+			say(summary)
+	return True
+
 
 ## Handle Input
 handleFlags = {
@@ -197,6 +216,7 @@ handleFlags = {
 	'mpu-ungag':    lambda userFrom, command: ungag(),
 	'info':         lambda userFrom, command: info(command),
 	'infoset':	lambda userFrom, command: infoset(userFrom, command),
+	'mpu-changelog':lambda userFrom, command: changelog(command),
 }
 
 # Treat PMs like public flags, except output is sent back in a PM to the user
