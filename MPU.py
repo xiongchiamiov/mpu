@@ -176,6 +176,8 @@ def info(command):
 def infoset(userFrom, command):
 	global userData
 	global userDataFile
+	global files
+
 	split = command.split()
 	info = split[0]
 	try:
@@ -190,7 +192,7 @@ def infoset(userFrom, command):
 		userData[userFrom][info] = data
 	
 	# pickle userData
-	pickleFile = open(userDataFile, 'w')
+	pickleFile = open(files['userData'], 'w')
 	pickle.dump(userData, pickleFile)
 	pickleFile.close()
 
@@ -327,21 +329,22 @@ while(True):
 
 		# change some settings based on whether we're running the testing version or not
 		if(sys.argv[0].find('testing')!=-1):
-			userDataFile = 'userData_testing.pickle'
+			files['userData'] = 'userData_testing.pickle'
 			files['jeeves'] = 'jeeves_testing.pickle'
 			channel = '#mputesting'
 			nick = 'MPU-testing'
 			irclib.DEBUG = True
 		else:
-			userDataFile = 'userData.pickle'
+			files['userData'] = 'userData.pickle'
 			files['jeeves'] = 'jeeves.pickle'
 			channel = '#cplug'
 			nick = 'MPU'
 
 		# load the pickled files
 		try:
-			pickleFile = open(userDataFile, 'r')
+			pickleFile = open(files['userData'], 'r')
 			userData = pickle.load(pickleFile)
+			pickleFile.close()
 		except:
 			userData = {}
 		try:
