@@ -21,6 +21,8 @@ port = 6667
 password = dirty_secrets.password
 name = '/msg MPU MPU-help'
 owner = 'xiong_chiamiov'
+users = {}
+users['cabal'] = ('xiong_chiamiov',)
 
 gagged = False
 
@@ -70,6 +72,10 @@ def help(command=None):
 	if(command=='mpu-changelog'):
 		say("Tells what's been changed recently.  If given an argument, get all changes since then.")
 		say('Example: mpu-changelog 2weeks, mpu-changelog "12 march"')
+		return True
+	if(command=='whatis'):
+		say("Let's you know what everyone's talking about.  Best used via pm.")
+		say("Example: whatis foo, whatis set foo a common metasyntatic variable")
 		return True
 	else:
 		say("Available commands: " + (' '.join(sorted(handleFlags.keys()))))
@@ -203,6 +209,46 @@ def changelog(command):
 			say(summary)
 	return True
 
+def whatis(userFrom, command):
+	# are we recording new information?
+	if command[:4] == 'set ':
+		return whatis_set(userFrom, command[4:])
+
+	global jeeves
+
+	if command in jeeves:
+		say(command+": "+jeeves[command])
+		return True
+	else:
+		say("I don't know nothin' 'bout "+command)
+		return False
+
+def whatis_set(userFrom, definition):
+	global users
+	global jeeves
+	global files
+
+	if userFrom in users['cabal']:
+		command = definition.split()[0]
+		definition = definition[len(command)+1:]
+
+		if definition:
+			jeeves[command] = definition
+			say("New definition for "+command+" set.")
+		else:
+			del jeeves[command]
+			say("Definition unset for "+command+".")
+
+		# pickle jeeves
+		pickleFile = open(files['jeeves'], 'w')
+		pickle.dump(jeeves, pickleFile)
+		pickleFile.close()
+
+		return True
+	else:
+		say("I'm sorry, but I don't trust you.  Y'know, the darting eyes and all.")
+		return False
+
 
 ## Handle Input
 handleFlags = {
@@ -217,6 +263,7 @@ handleFlags = {
 	'info':         lambda userFrom, command: info(command),
 	'infoset':	lambda userFrom, command: infoset(userFrom, command),
 	'mpu-changelog':lambda userFrom, command: changelog(command),
+	'whatis':	lambda userFrom, command: whatis(userFrom, command),
 }
 
 # Treat PMs like public flags, except output is sent back in a PM to the user
@@ -275,23 +322,34 @@ irc.add_global_handler('pubmsg', handlePublicMessage)
 # Jump into an infinite loop
 while(True):
 	try:
+		# dictionary to group information about files we need
+		files = {}
+
 		# change some settings based on whether we're running the testing version or not
 		if(sys.argv[0].find('testing')!=-1):
 			userDataFile = 'userData_testing.pickle'
+			files['jeeves'] = 'jeeves_testing.pickle'
 			channel = '#mputesting'
 			nick = 'MPU-testing'
 			irclib.DEBUG = True
 		else:
 			userDataFile = 'userData.pickle'
+			files['jeeves'] = 'jeeves.pickle'
 			channel = '#cplug'
 			nick = 'MPU'
 
-		# load the pickled file
+		# load the pickled files
 		try:
 			pickleFile = open(userDataFile, 'r')
 			userData = pickle.load(pickleFile)
 		except:
 			userData = {}
+		try:
+			pickleFile = open(files['jeeves'], 'r')
+			jeeves = pickle.load(pickleFile)
+			pickleFile.close()
+		except:
+			jeeves = {}
 		
 		# Create a server object, connect and join the channel
 		server = irc.server()
