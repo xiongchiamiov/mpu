@@ -37,43 +37,43 @@ def say(message):
 		sleep(1)
 
 def help(command=None):
-	if(command=='mpu-help'):
+	if command=='mpu-help':
 		say("If called by itself, MPU-help will list all available commands. Followed by another command, MPU-help will give more information on that command.")
 		return True
-	if(command=='wthru'):
+	elif command=='wthru':
 		say('Returns a response to the question, "Who the hell are you?".')
 		return True
-	if(command=='motivation'):
+	elif command=='motivation':
 		say("Gives a motivating quote from Kamina (Gurren Lagann).")
 		return True
-	if(command=='mpu-source'):
+	elif command=='mpu-source':
 		say("Gives the address of the Git repository of MPU's code.")
 		return True
-	if(command=='mpu-report'):
+	elif command=='mpu-report':
 		say("Will send whatever follows to "+owner+" in a PM, or log it if he's offline.")
 		return True
-	if(command=='mpu-kill'):
+	elif command=='mpu-kill':
 		say("Disconnects MPU from "+network+".")
 		return True
-	if(command=='mpu-gag'):
+	elif command=='mpu-gag':
 		say("Prevents MPU from speaking until ungagged.")
 		return True
-	if(command=='mpu-ungag'):
+	elif command=='mpu-ungag':
 		say("Allows MPU to speak again after being gagged.")
 		return True
-	if(command=='info'):
+	elif command=='info':
 		say("Gets information on a user.")
 		say("Usage: 'info [username]' to list infos, 'info [username] [info1, info2...]' to get infos.")
 		return True
-	if(command=='infoset'):
+	elif command=='infoset':
 		say("Sets information about you.")
 		say("Usage: infoset [info] [details]")
 		return True
-	if(command=='mpu-changelog'):
+	elif command=='mpu-changelog':
 		say("Tells what's been changed recently.  If given an argument, get all changes since then.")
 		say('Example: mpu-changelog 2weeks, mpu-changelog "12 march"')
 		return True
-	if(command=='whatis'):
+	elif command=='whatis':
 		say("Let's you know what everyone's talking about.  Best used via pm.")
 		say("Example: whatis foo, whatis set foo a common metasyntatic variable")
 		return True
