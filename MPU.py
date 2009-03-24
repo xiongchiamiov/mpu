@@ -226,8 +226,8 @@ def whatis(userFrom, command):
 
 	global jeeves
 
-	if command in jeeves:
-		say(command+": "+jeeves[command])
+	if command.lower() in jeeves:
+		say(command+": "+jeeves[command.lower()])
 		return True
 	else:
 		say("I don't know nothin' 'bout "+command)
@@ -239,7 +239,7 @@ def whatis_set(userFrom, definition):
 	global files
 
 	if userFrom in users['cabal']:
-		command = definition.split()[0]
+		command = definition.split()[0].lower()
 		definition = definition[len(command)+1:]
 
 		if definition:
