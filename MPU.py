@@ -349,19 +349,14 @@ while(True):
 			nick = 'MPU'
 
 		# load the pickled files
-		try:
-			pickleFile = open(files['userData'], 'r')
-			userData = pickle.load(pickleFile)
-			pickleFile.close()
-		except:
-			userData = {}
-		try:
-			pickleFile = open(files['jeeves'], 'r')
-			jeeves = pickle.load(pickleFile)
-			pickleFile.close()
-		except:
-			jeeves = {}
-		
+		for key, file in files.items():
+			try:
+				pickleFile = open(file, 'r')
+				vars()[key] = pickle.load(pickleFile)
+				pickleFile.close()
+			except:
+				vars()[key] = {}
+				
 		# Create a server object, connect and join the channel
 		server = irc.server()
 		server.connect(network, port, nick, password=password, ircname=name)
