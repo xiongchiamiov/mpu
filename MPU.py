@@ -20,8 +20,8 @@ network = 'irc.freenode.net'
 port = 6667
 password = dirty_secrets.password
 name = '/msg MPU MPU-help'
-owner = 'xiong_chiamiov'
 users = {}
+users['owner'] = 'xiong_chiamiov'
 users['cabal'] = ('xiong_chiamiov',)
 
 gagged = False
@@ -37,6 +37,8 @@ def say(message):
 		sleep(1)
 
 def help(command=None):
+	global users
+
 	if command=='mpu-help':
 		say("If called by itself, MPU-help will list all available commands. Followed by another command, MPU-help will give more information on that command.")
 		return True
@@ -50,7 +52,7 @@ def help(command=None):
 		say("Gives the address of the Git repository of MPU's code.")
 		return True
 	elif command=='mpu-report':
-		say("Will send whatever follows to "+owner+" in a PM, or log it if he's offline.")
+		say("Will send whatever follows to "+users['owner']+" in a PM, or log it if he's offline.")
 		return True
 	elif command=='mpu-kill':
 		say("Disconnects MPU from "+network+".")
@@ -84,7 +86,9 @@ def help(command=None):
 		return True
 
 def wthru():
-	say("MPU is owned by "+owner+" and responds to PMs just as well as channel flags (save the spam!)")
+	global users
+
+	say("MPU is owned by "+users['owner']+" and responds to PMs just as well as channel flags (save the spam!)")
 	say("ED: Who are you? Eh? What? What did you just say?")
 	say("SATELLITE: Who, you? Here, always.")
 	say("ED: Edward. A net diver from Earth.")
@@ -103,6 +107,8 @@ def source():
 	return say("You can view my source at http://github.com/xiongchiamiov/mpu/ .")
 
 def report(userFrom, message):
+	global users
+
 	# FIXME
 	# some magic to determine if owner is online
 	#if(True):
@@ -114,13 +120,15 @@ def report(userFrom, message):
 	#	return logFile.write(userFrom+" had something to say: "+message+"\n") and logFile.close()
 
 	# temporary while I determine what magic to use above
-	server.privmsg(owner, userFrom+" has something to say: "+message)
+	server.privmsg(users['owner'], userFrom+" has something to say: "+message)
 	logFile = open('MPU.log', 'a')
 	return logFile.write(strftime("%Y-%m-%d %H:%M:%S")+" -- "+userFrom+" had something to say: "+message+"\n") and logFile.close()
 
 def kill(userFrom):
-	if userFrom == owner:
-		server.privmsg(owner, "I've been killed!")
+	global users
+
+	if userFrom == users['owner']:
+		server.privmsg(users['owner'], "I've been killed!")
 		logFile = open('MPU.log', 'a')
 		logFile.write(strftime("%Y-%m-%d %H:%M:%S")+" -- "+"Got killed!\n")
 		server.disconnect()
