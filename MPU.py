@@ -20,9 +20,6 @@ network = 'irc.freenode.net'
 port = 6667
 password = dirty_secrets.password
 name = '/msg MPU MPU-help'
-users = {}
-users['owner'] = 'xiong_chiamiov'
-users['cabal'] = ('xiong_chiamiov',)
 
 gagged = False
 
@@ -38,6 +35,7 @@ def say(message):
 
 def help(command=None):
 	global users
+	global nick
 
 	if command=='mpu-help':
 		say("If called by itself, MPU-help will list all available commands. Followed by another command, MPU-help will give more information on that command.")
@@ -79,6 +77,9 @@ def help(command=None):
 		say("Let's you know what everyone's talking about.  Best used via pm.")
 		say("Example: whatis foo, whatis set foo a common metasyntatic variable")
 		return True
+	elif command=='mpu-usermod':
+		say("Changes the status of a user, as viewed by "+nick)
+		say("Usage: mpu-usermod [list] [user1 [user2 user3...]]")
 	else:
 		say("Available commands: " + (' '.join(sorted(handleFlags.keys()))))
 		say("Type 'MPU-help [command]' to get more info about command.")
@@ -259,6 +260,39 @@ def whatis_set(userFrom, definition):
 		say("I'm sorry, but I don't trust you.  Y'know, the darting eyes and all.")
 		return False
 
+def usermod(userFrom, command):
+	global users
+	global files
+
+	if userFrom in users['owner']:
+		try:
+			mod = command.split()[0]
+			usersToMod = command.split()[1:]
+		except:
+			say("Available userlists: "+', '.join(users.keys()))
+			return False
+
+		if mod in users.keys():
+			for user in usersToMod:
+				if user in users[mod]:
+					users[mod].remove(user)
+					say(user+" is no longer a member of "+mod)
+				else:
+					users[mod].append(user)
+					say(user+" is now a member of "+mod)
+			# pickles users
+			pickleFile = open(files['users'], 'w')
+			pickle.dump(users, pickleFile)
+			pickleFile.close()
+
+			return True
+		else:
+			say("Available userlists: "+', '.join(users.keys()))
+			return False
+	else:
+		say("I'm sorry, but I don't trust you.  Y'know, the darting eyes and all.")
+		return False
+
 
 ## Handle Input
 handleFlags = {
@@ -274,6 +308,7 @@ handleFlags = {
 	'infoset':	lambda userFrom, command: infoset(userFrom, command),
 	'mpu-changelog':lambda userFrom, command: changelog(command),
 	'whatis':	lambda userFrom, command: whatis(userFrom, command),
+	'mpu-usermod':	lambda userFrom, command: usermod(userFrom, command),
 }
 
 # Treat PMs like public flags, except output is sent back in a PM to the user
@@ -339,12 +374,14 @@ while(True):
 		if(sys.argv[0].find('testing')!=-1):
 			files['userData'] = 'userData_testing.pickle'
 			files['jeeves'] = 'jeeves_testing.pickle'
+			files['users'] = 'users_testing.pickle'
 			channel = '#mputesting'
 			nick = 'MPU-testing'
 			irclib.DEBUG = True
 		else:
 			files['userData'] = 'userData.pickle'
 			files['jeeves'] = 'jeeves.pickle'
+			files['users'] = 'users.pickle'
 			channel = '#cplug'
 			nick = 'MPU'
 
@@ -356,7 +393,12 @@ while(True):
 				pickleFile.close()
 			except:
 				vars()[key] = {}
-				
+
+		# add some defaults for users
+		users['owner'] = 'xiong_chiamiov'
+		if not 'cabal' in users.keys():
+			users['cabal'] = []
+
 		# Create a server object, connect and join the channel
 		server = irc.server()
 		server.connect(network, port, nick, password=password, ircname=name)
