@@ -268,6 +268,9 @@ def usermod(userFrom, command):
 		try:
 			mod = command.split()[0]
 			usersToMod = command.split()[1:]
+			if not usersToMod:
+				say("Members of "+mod+": "+', '.join(users[mod]))
+				return False
 		except:
 			say("Available userlists: "+', '.join(users.keys()))
 			return False
